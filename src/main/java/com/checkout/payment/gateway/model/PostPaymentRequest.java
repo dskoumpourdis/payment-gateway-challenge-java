@@ -1,6 +1,8 @@
 package com.checkout.payment.gateway.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -13,23 +15,25 @@ public class PostPaymentRequest implements Serializable {
   @Pattern(regexp = "\\d+")
   @NotNull
   private String cardNumberLastFour;
+
   @JsonProperty("expiry_month")
-  @Size(min = 1, max = 12)
-  @NotNull
+  @Min(value = 1)
+  @Max(value = 12)
   private int expiryMonth;
-  @NotNull
+
   @JsonProperty("expiry_year")
-  @NotNull
   private int expiryYear;
+
   @Size(min = 3, max = 3)
   @NotNull
   private String currency;
-  @NotNull
+
   private int amount;
+
   @Size(min = 3, max = 4)
   @Pattern(regexp = "\\d+")
   @NotNull
-  private int cvv;
+  private String cvv;
 
   public String getCardNumberLastFour() {
     return cardNumberLastFour;
@@ -71,11 +75,11 @@ public class PostPaymentRequest implements Serializable {
     this.amount = amount;
   }
 
-  public int getCvv() {
+  public String getCvv() {
     return cvv;
   }
 
-  public void setCvv(int cvv) {
+  public void setCvv(String cvv) {
     this.cvv = cvv;
   }
 

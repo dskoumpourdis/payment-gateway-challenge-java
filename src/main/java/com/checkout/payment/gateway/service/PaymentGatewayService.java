@@ -58,15 +58,18 @@ public class PaymentGatewayService {
     LocalDate currentDate = LocalDate.now();
 
     if (currentDate.getYear() > paymentRequest.getExpiryYear()) {
+      LOG.warn("Invalid year {}", paymentRequest);
       return uuid;
     }
     if (currentDate.getMonthValue() > paymentRequest.getExpiryMonth()) {
+      LOG.warn("Invalid month {}", paymentRequest);
       return uuid;
     }
 
     if (!paymentRequest.getCurrency().equals(Currency.EUR.toString())
         && !paymentRequest.getCurrency().equals(Currency.USD.toString())
         && !paymentRequest.getCurrency().equals(Currency.GBP.toString())) {
+      LOG.warn("Invalid currency {}", paymentRequest);
       return uuid;
     }
 
@@ -82,6 +85,7 @@ public class PaymentGatewayService {
         && !response.getBody().getAuthorization_code().isEmpty()) {
       uuid = UUID.fromString(response.getBody().getAuthorization_code());
       PostPaymentResponse postPaymentResponse = getPostPaymentResponse(paymentRequest, uuid);
+      LOG.info("Saving payment with ID {}", uuid);
       paymentsRepository.add(postPaymentResponse);
     }
 

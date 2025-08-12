@@ -6,6 +6,8 @@ import com.checkout.payment.gateway.service.PaymentGatewayService;
 import java.util.UUID;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +20,7 @@ import static com.checkout.payment.gateway.enums.PaymentStatus.*;
 
 @RestController("api")
 public class PaymentGatewayController {
-
+  private static final Logger LOG = LoggerFactory.getLogger(PaymentGatewayController.class);
   private final PaymentGatewayService paymentGatewayService;
 
   public PaymentGatewayController(PaymentGatewayService paymentGatewayService) {
@@ -31,8 +33,8 @@ public class PaymentGatewayController {
   }
 
   @PostMapping("/payment")
-  public ResponseEntity<PostPaymentResponse> processPayment(@Valid @RequestBody final PostPaymentRequest postPaymentRequest)
-      throws JsonProcessingException {
+  public ResponseEntity<PostPaymentResponse> processPayment(@Valid @RequestBody final PostPaymentRequest postPaymentRequest) {
+    LOG.info("Attempting payment {}", postPaymentRequest);
 
     UUID id = paymentGatewayService.processPayment(postPaymentRequest);
 
@@ -44,6 +46,8 @@ public class PaymentGatewayController {
     response.setExpiryMonth(postPaymentRequest.getExpiryMonth());
     response.setExpiryYear(postPaymentRequest.getExpiryYear());
     response.setCardNumberLastFour(postPaymentRequest.getCardNumberLastFour());
+
+    LOG.info("Processed payment {}", response);
 
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
