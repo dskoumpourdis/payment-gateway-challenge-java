@@ -7,7 +7,6 @@ import java.util.UUID;
 public class PostPaymentResponse {
   private UUID id;
   private PaymentStatus status;
-  @JsonProperty("card_number")
   private String cardNumberLastFour;
   private int expiryMonth;
   private int expiryYear;
