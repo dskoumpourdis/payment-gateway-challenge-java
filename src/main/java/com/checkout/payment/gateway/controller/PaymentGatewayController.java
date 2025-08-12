@@ -45,7 +45,9 @@ public class PaymentGatewayController {
     response.setId(id);
     response.setExpiryMonth(postPaymentRequest.getExpiryMonth());
     response.setExpiryYear(postPaymentRequest.getExpiryYear());
-    response.setCardNumberLastFour(postPaymentRequest.getCardNumberLastFour());
+    String lastFour = postPaymentRequest.getCardNumberLastFour()
+        .substring(postPaymentRequest.getCardNumberLastFour().length()-4);
+    response.setCardNumberLastFour(lastFour);
 
     LOG.info("Processed payment {}", response);
 

@@ -84,6 +84,7 @@ public class PaymentGatewayService {
         && response.getBody() != null
         && !response.getBody().getAuthorization_code().isEmpty()) {
       uuid = UUID.fromString(response.getBody().getAuthorization_code());
+      paymentRequest.setCardNumberLastFour(paymentRequest.getCardNumberLastFour().substring(paymentRequest.getCardNumberLastFour().length()-4));
       PostPaymentResponse postPaymentResponse = getPostPaymentResponse(paymentRequest, uuid);
       LOG.info("Saving payment with ID {}", uuid);
       paymentsRepository.add(postPaymentResponse);

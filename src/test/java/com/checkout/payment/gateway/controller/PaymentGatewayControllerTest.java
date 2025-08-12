@@ -47,7 +47,7 @@ class PaymentGatewayControllerTest {
   @BeforeEach
   void setUp() {
     validRequest = new PostPaymentRequest();
-    validRequest.setCardNumberLastFour("1234567890123456");
+    validRequest.setCardNumberLastFour("1234567890123451");
     validRequest.setExpiryMonth(12);
     validRequest.setExpiryYear(2025);
     validRequest.setCurrency("USD");
@@ -106,7 +106,7 @@ class PaymentGatewayControllerTest {
         .andExpect(jsonPath("$.id", is(paymentId.toString())))
         .andExpect(jsonPath("$.expiryMonth", is(12)))
         .andExpect(jsonPath("$.expiryYear", is(2025)))
-        .andExpect(jsonPath("$.cardNumberLastFour", is("1234567890123456")));
+        .andExpect(jsonPath("$.cardNumberLastFour", is("3451")));
 
     verify(paymentGatewayService).processPayment(any(PostPaymentRequest.class));
   }
