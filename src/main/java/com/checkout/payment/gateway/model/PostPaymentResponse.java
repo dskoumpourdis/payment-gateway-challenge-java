@@ -1,7 +1,6 @@
 package com.checkout.payment.gateway.model;
 
 import com.checkout.payment.gateway.enums.PaymentStatus;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.UUID;
 
 public class PostPaymentResponse {
