@@ -11,28 +11,30 @@ import java.io.Serializable;
 public class PostPaymentRequest implements Serializable {
 
   @JsonProperty("card_number")
-  @Size(min = 14, max = 19)
-  @Pattern(regexp = "\\d+")
-  @NotNull
+  @Size(min = 14, max = 19, message = "Card number must be between 14 and 19 digits")
+  @Pattern(regexp = "\\d+", message = "Card number must contain only digits")
+  @NotNull(message = "Card number is required")
   private String cardNumberLastFour;
 
   @JsonProperty("expiry_month")
-  @Min(value = 1)
-  @Max(value = 12)
+  @Min(value = 1, message = "Expiry month must be between 1 and 12")
+  @Max(value = 12, message = "Expiry month must be between 1 and 12")
   private int expiryMonth;
 
   @JsonProperty("expiry_year")
+  @Min(value = 2025, message = "Expiry year must be current year or later")
   private int expiryYear;
 
-  @Size(min = 3, max = 3)
-  @NotNull
+  @Size(min = 3, max = 3, message = "Currency must be exactly 3 characters")
+  @NotNull(message = "Currency is required")
   private String currency;
 
+  @Min(value = 1, message = "Amount must be greater than 0")
   private int amount;
 
-  @Size(min = 3, max = 4)
-  @Pattern(regexp = "\\d+")
-  @NotNull
+  @Size(min = 3, max = 4, message = "CVV must be 3 or 4 digits")
+  @Pattern(regexp = "\\d+", message = "CVV must contain only digits")
+  @NotNull(message = "CVV is required")
   private String cvv;
 
   public String getCardNumberLastFour() {
