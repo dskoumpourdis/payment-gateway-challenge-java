@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import static com.checkout.payment.gateway.enums.PaymentStatus.AUTHORIZED;
@@ -77,17 +78,29 @@ public class PaymentGatewayService {
     headers.setContentType(MediaType.APPLICATION_JSON);
     HttpEntity<PostPaymentRequest> requestEntity = new HttpEntity<>(paymentRequest, headers);
 
-    ResponseEntity<PostAuthResponse> response = restTemplate.postForEntity(BANK_URL, requestEntity,
-        PostAuthResponse.class);
-    if (response != null
-        && response.getStatusCode().is2xxSuccessful()
-        && response.getBody() != null
-        && !response.getBody().getAuthorization_code().isEmpty()) {
-      uuid = UUID.fromString(response.getBody().getAuthorization_code());
-      paymentRequest.setCardNumberLastFour(paymentRequest.getCardNumberLastFour().substring(paymentRequest.getCardNumberLastFour().length()-4));
-      PostPaymentResponse postPaymentResponse = getPostPaymentResponse(paymentRequest, uuid);
-      LOG.info("Saving payment with ID {}", uuid);
-      paymentsRepository.add(postPaymentResponse);
+    try {
+      ResponseEntity<PostAuthResponse> response = restTemplate.postForEntity(
+          BANK_URL, requestEntity, PostAuthResponse.class
+      );
+
+      if (response != null
+          && response.getStatusCode().is2xxSuccessful()
+          && response.getBody() != null
+          && !response.getBody().getAuthorization_code().isEmpty()) {
+
+        uuid = UUID.fromString(response.getBody().getAuthorization_code());
+        paymentRequest.setCardNumberLastFour(
+            paymentRequest.getCardNumberLastFour()
+                .substring(paymentRequest.getCardNumberLastFour().length() - 4)
+        );
+        PostPaymentResponse postPaymentResponse = getPostPaymentResponse(paymentRequest, uuid);
+        LOG.info("Saving payment with ID {}", uuid);
+        paymentsRepository.add(postPaymentResponse);
+      }
+
+    } catch (HttpServerErrorException e) {
+      LOG.error("Bank simulator returned a server error: {}", e.getMessage());
+      throw new EventProcessingException("Bank service unavailable");
     }
 
     return uuid;
